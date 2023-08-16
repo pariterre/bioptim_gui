@@ -50,7 +50,7 @@ def test_create_pendulum():
                     max=((0, 1, 0), (0, 2 * np.pi, np.pi)),
                     interpolation=Interpolation.CONSTANT_WITH_FIRST_AND_LAST_DIFFERENT,
                 ),
-                phase=0
+                phase=0,
             ),
             OptimizationVariable(
                 name="qdot",
@@ -70,12 +70,8 @@ def test_create_pendulum():
                     initial_guess=((0,), (0,)),
                     interpolation=Interpolation.CONSTANT,
                 ),
-                bounds=Bounds(
-                    min=((-35,), (0,)),
-                    max=((35,), (0,)),
-                    interpolation=Interpolation.CONSTANT
-                ),
-                phase=0
+                bounds=Bounds(min=((-35,), (0,)), max=((35,), (0,)), interpolation=Interpolation.CONSTANT),
+                phase=0,
             ),
         ),
         objective_functions=(
@@ -86,7 +82,7 @@ def test_create_pendulum():
     # Generate the file and compare it the to model
     file_path = "temporary.py"
     exporter.export(file_path)
-    filecmp.cmp(file_path, "expected/expected_create_pendulum.py")
+    assert filecmp.cmp(file_path, "expected/expected_create_pendulum.py")
 
     # Clean up and exit
     os.remove(file_path)

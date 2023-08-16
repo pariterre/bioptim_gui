@@ -29,9 +29,9 @@ class OcpExporter:
         with open(filename, "w+") as file:
             # Write the header
             file.write(
-                "\"\"\"\n"
+                '"""\n'
                 f"This file was automatically generated using BioptimGUI version {__version__}\n"
-                "\"\"\"\n"
+                '"""\n'
                 "\n"
                 "from bioptim import *\n"  # TODO Pariterre - Do not import '*'
                 "\n"
@@ -41,99 +41,95 @@ class OcpExporter:
             # Write the docstring of prepare_ocp section
             file.write(
                 "def prepare_ocp():\n"
-                "\t\"\"\"\n"
-                "\tThis function build an optimal control program and instantiate it. "
+                '    """\n'
+                "    This function build an optimal control program and instantiate it. "
                 "It can be seen as a factory for the\n"
-                "\tOptimalControlProgram class.\n"
-                "\t\n"
-                "\tParameters\n"
-                "\t----------\n"
-                "\t\n"
-                "\tReturns\n"
-                "\t-------\n"
-                "\tThe OptimalControlProgram ready to be solved\n"
-                "\t\"\"\"\n"
-                "\t\n"
+                "    OptimalControlProgram class.\n"
+                "\n"
+                "    Parameters\n"
+                "    ----------\n"
+                "\n"
+                "    Returns\n"
+                "    -------\n"
+                "    The OptimalControlProgram ready to be solved\n"
+                '    """\n'
+                "\n"
             )
 
             # Write the Generic section
             file.write(
-                f"\t# Declaration of generic elements\n"
-                f"\tbio_model = {repr(self.bio_model_protocol.value)}(\"{self.bio_model_path}\")\n"
-                f"\tn_shooting = {self.n_shooting}\n"
-                f"\tphase_time = {self.phase_time}\n"
-                f"\t\n"
+                f"    # Declaration of generic elements\n"
+                f'    bio_model = {repr(self.bio_model_protocol.value)}("{self.bio_model_path}")\n'
+                f"    n_shooting = {self.n_shooting}\n"
+                f"    phase_time = {self.phase_time}\n"
+                f"\n"
             )
 
             # Write the dynamics section
             file.write(
-                f"\t# Declaration of the dynamics function used during integration\n"
-                f"\tdynamics = Dynamics({repr(self.dynamics.fcn.value)}, expand={self.dynamics.is_expanded})\n"
-                "\t\n"
+                f"    # Declaration of the dynamics function used during integration\n"
+                f"    dynamics = Dynamics({repr(self.dynamics.fcn.value)}, expand={self.dynamics.is_expanded})\n"
+                "\n"
             )
 
             # Write the variable section
-            file.write(
-                f"\t# Declaration of optimization variables bounds and initial guesses\n"
-            )
+            file.write(f"    # Declaration of optimization variables bounds and initial guesses\n")
             for var_type, all_variables in zip(("x", "u"), (self.state_variables, self.control_variables)):
-                file.write(
-                    f"\t{var_type}_bounds = BoundsList()\n"
-                )
+                file.write(f"    {var_type}_bounds = BoundsList()\n")
                 for variable in all_variables:
                     if variable.bounds:
                         file.write(
-                            f"\t{var_type}_bounds.add(\n"
-                            f"\t\t\"{variable.name}\",\n"
-                            f"\t\tmin_bound={variable.bounds.min},\n"
-                            f"\t\tmax_bound={variable.bounds.max},\n"
-                            f"\t\tinterpolation={repr(variable.bounds.interpolation.value)},\n"
-                            f"\t\tphase={variable.phase},\n"
-                            f"\t)")
-                    file.write("\t\n")
-                    file.write("\t\n")
+                            f"    {var_type}_bounds.add(\n"
+                            f'        "{variable.name}",\n'
+                            f"        min_bound={variable.bounds.min},\n"
+                            f"        max_bound={variable.bounds.max},\n"
+                            f"        interpolation={repr(variable.bounds.interpolation.value)},\n"
+                            f"        phase={variable.phase},\n"
+                            f"    )"
+                        )
+                    file.write("\n")
+                    file.write("\n")
 
-                file.write(
-                    f"\t{var_type}_initial_guesses = InitialGuessList()\n"
-                )
+                file.write(f"    {var_type}_initial_guesses = InitialGuessList()\n")
                 for variable in all_variables:
                     if variable.initial_guess:
                         file.write(
-                            f"\t{var_type}_initial_guesses.add(\n"
-                            f"\t\t\"{variable.name}\",\n"
-                            f"\t\tinitial_guess={variable.initial_guess.initial_guess},\n"
-                            f"\t\tinterpolation={repr(variable.initial_guess.interpolation.value)},\n"
-                            f"\t\tphase={variable.phase},\n"
-                            f"\t)")
-                        file.write("\t\n")
-                file.write("\t\n")
+                            f"    {var_type}_initial_guesses.add(\n"
+                            f'        "{variable.name}",\n'
+                            f"        initial_guess={variable.initial_guess.initial_guess},\n"
+                            f"        interpolation={repr(variable.initial_guess.interpolation.value)},\n"
+                            f"        phase={variable.phase},\n"
+                            f"    )"
+                        )
+                        file.write("\n")
+                file.write("\n")
 
             # Write the objective functions
-            file.write("\tobjective_functions = ObjectiveList()\n")
+            file.write("    objective_functions = ObjectiveList()\n")
             for objective_function in self.objective_functions:
                 file.write(
-                    f"\tobjective_functions.add(\n"
-                    f"\t\tobjective={repr(objective_function.fcn.value)},\n"
-                    + "".join([f"\t\t{key}=\"{value}\",\n" for key, value in objective_function.args.items()]) +
-                    f"\t)\n"
+                    f"    objective_functions.add(\n"
+                    f"        objective={repr(objective_function.fcn.value)},\n"
+                    + "".join([f'        {key}="{value}",\n' for key, value in objective_function.args.items()])
+                    + f"    )\n"
                 )
-            file.write("\t\n")
+            file.write("\n")
 
             # Write the return section
             file.write(
-                f"\t# Construct and return the optimal control program (OCP)\n"
-                f"\treturn {repr(self.optimal_control_type.value)}(\n"
-                "\t\tbio_model=bio_model,\n"
-                "\t\tn_shooting=n_shooting,\n"
-                "\t\tphase_time=phase_time,\n"
-                "\t\tdynamics=dynamics,\n"
-                "\t\tx_bounds=x_bounds,\n"
-                "\t\tu_bounds=u_bounds,\n"
-                "\t\tx_init=x_initial_guesses,\n"
-                "\t\tu_init=u_initial_guesses,\n"
-                "\t\tobjective_functions=objective_functions,\n"
-                f"\t\tuse_sx={self.use_sx},\n"
-                "\t)\n"
+                f"    # Construct and return the optimal control program (OCP)\n"
+                f"    return {repr(self.optimal_control_type.value)}(\n"
+                "        bio_model=bio_model,\n"
+                "        n_shooting=n_shooting,\n"
+                "        phase_time=phase_time,\n"
+                "        dynamics=dynamics,\n"
+                "        x_bounds=x_bounds,\n"
+                "        u_bounds=u_bounds,\n"
+                "        x_init=x_initial_guesses,\n"
+                "        u_init=u_initial_guesses,\n"
+                "        objective_functions=objective_functions,\n"
+                f"        use_sx={self.use_sx},\n"
+                "    )\n"
                 "\n"
                 "\n"
             )
@@ -141,18 +137,18 @@ class OcpExporter:
             # Write run as a script section
             file.write(
                 "def main():\n"
-                "\t\"\"\"\n"
-                "\tIf this file is run, then it will perform the optimization\n"
-                "\t\"\"\"\n"
-                "\t\n"
-                "\t# --- Prepare the ocp --- #\n"
-                f"\tocp = prepare_ocp()\n"
-                "\t\n"
-                "\t# --- Solve the ocp --- #\n"
-                "\tsol = ocp.solve(Solver.IPOPT())\n"
-                "\tsol.print_cost()\n"
-                "\t\n"
+                '    """\n'
+                "    If this file is run, then it will perform the optimization\n"
+                '    """\n'
                 "\n"
-                "if __name__ == \"__main__\":\n"
-                "\tmain()\n"
+                "    # --- Prepare the ocp --- #\n"
+                f"    ocp = prepare_ocp()\n"
+                "\n"
+                "    # --- Solve the ocp --- #\n"
+                "    sol = ocp.solve(Solver.IPOPT())\n"
+                "    sol.print_cost()\n"
+                "\n"
+                "\n"
+                'if __name__ == "__main__":\n'
+                "    main()\n"
             )

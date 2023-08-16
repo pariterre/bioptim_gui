@@ -9,8 +9,7 @@ from ..misc.named_structure import NamedStructure
 class Interpolation(Enum):
     CONSTANT = NamedStructure("InterpolationType.CONSTANT", "Constant")
     CONSTANT_WITH_FIRST_AND_LAST_DIFFERENT = NamedStructure(
-        "InterpolationType.CONSTANT_WITH_FIRST_AND_LAST_DIFFERENT",
-        "Start, intermediates and last"
+        "InterpolationType.CONSTANT_WITH_FIRST_AND_LAST_DIFFERENT", "Start, intermediates and last"
     )
 
 
@@ -26,6 +25,7 @@ class Bounds:
     interpolation
         The interpolation used to interpret the bounds structure.
     """
+
     min: tuple[tuple[float, ...], ...] | np.ndarray
     max: tuple[tuple[float, ...], ...] | np.ndarray
     interpolation: Interpolation

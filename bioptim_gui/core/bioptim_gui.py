@@ -20,6 +20,7 @@ class BioptimGui(QMainWindow):
     # Optimal control type
     _ocp_types_available = tuple(str(e.value) for e in OptimalControlType)
     _ocp_type_current_index: int = 0
+
     @property
     def optimal_control_type(self):
         return self._ocp_types_available[self._current_ocp_type_index]
@@ -27,6 +28,7 @@ class BioptimGui(QMainWindow):
     # BioModel
     _bio_models_available = tuple(str(e.value) for e in BioModels)
     _bio_models_current_index: int = 0
+
     @property
     def bio_model_protocol(self):
         return self._bio_models_available[self._bio_models_current_index]
