@@ -1,3 +1,4 @@
+import filecmp
 import os
 
 import numpy as np
@@ -33,8 +34,9 @@ def test_create_pendulum():
         optimal_control_type=OptimalControlType.OptimalControlProgram,
         bio_model_protocol=BioModels.BIORBD,
         bio_model_path="models/pendulum.bioMod",
+        use_sx=True,
         phase_time=1.0,
-        n_shooting=30,
+        n_shooting=10,
         dynamics=Dynamics(fcn=DynamicsFcn.TORQUE_DRIVEN, is_expanded=True),
         state_variables=(
             OptimizationVariable(
@@ -81,9 +83,11 @@ def test_create_pendulum():
         ),
     )
 
-    exporter.export("temporary.py")
+    # Generate the file and compare it the to model
+    file_path = "temporary.py"
+    exporter.export(file_path)
+    filecmp.cmp(file_path, "expected/expected_create_pendulum.py")
 
-    # os.remove(file_path)
+    # Clean up and exit
+    os.remove(file_path)
     return
-
-

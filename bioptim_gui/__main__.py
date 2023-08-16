@@ -2,8 +2,7 @@ from bioptim_gui import BioptimGui
 
 
 def main():
-    main = BioptimGui()
-    main.exec()
+    BioptimGui().exec()
 
 
 if __name__ == '__main__':

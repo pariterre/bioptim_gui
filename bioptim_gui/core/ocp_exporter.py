@@ -16,6 +16,7 @@ class OcpExporter:
 
     phase_time: float
     n_shooting: int
+    use_sx: bool
 
     dynamics: Dynamics
 
@@ -41,7 +42,8 @@ class OcpExporter:
             file.write(
                 "def prepare_ocp():\n"
                 "\t\"\"\"\n"
-                "\tThis function build an optimal control program and instantiate it. It can be seen as a factory for the\n"
+                "\tThis function build an optimal control program and instantiate it. "
+                "It can be seen as a factory for the\n"
                 "\tOptimalControlProgram class.\n"
                 "\t\n"
                 "\tParameters\n"
@@ -130,6 +132,7 @@ class OcpExporter:
                 "\t\tx_init=x_initial_guesses,\n"
                 "\t\tu_init=u_initial_guesses,\n"
                 "\t\tobjective_functions=objective_functions,\n"
+                f"\t\tuse_sx={self.use_sx},\n"
                 "\t)\n"
                 "\n"
                 "\n"
